@@ -25,6 +25,15 @@
      'av-standby
      'unknown))
 
+(define-type Projector-Aspect
+  (U 'normal
+     '4:3
+     '16:9
+     'auto
+     'full
+     'zoom
+     'native))
+
 
 (define-type Projector%
   (Class
@@ -36,6 +45,9 @@
 
     (online! (-> Void))
     (offline! (-> Void))
+
+    (set-aspect! (-> Projector-Aspect Void))
+    (get-aspect (-> Projector-Aspect))
 
     (set-mute! (-> Boolean Void))
     (set-freeze! (-> Boolean Void))
@@ -103,6 +115,19 @@
     (define/public (offline!)
       (void (command "PWR OFF")))
 
+    (define/public (set-aspect! aspect)
+      (void (command "ASPECT ~a" (aspect->code aspect))))
+
+    (define/public (get-aspect)
+      (match (command "ASPECT?")
+        ("ASPECT=00" 'normal)
+        ("ASPECT=10" '4:3)
+        ("ASPECT=20" '16:9)
+        ("ASPECT=30" 'auto)
+        ("ASPECT=40" 'full)
+        ("ASPECT=50" 'zoom)
+        ("ASPECT=60" 'native)))
+
     (define/public (set-mute! mute?)
       (void (command "MUTE ~a" (if mute? "ON" "OFF"))))
 
@@ -120,5 +145,16 @@
 
     (super-new)))
 
+
+(: aspect->code (-> Projector-Aspect (U "00" "10" "20" "30" "40" "50" "60")))
+(define (aspect->code aspect)
+  (match aspect
+    ('normal "00")
+    ('4:3 "10")
+    ('16:9 "20")
+    ('auto "30")
+    ('full "40")
+    ('zoom "50")
+    ('native "60")))
 
 ; vim:set ts=2 sw=2 et:

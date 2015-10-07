@@ -24,6 +24,11 @@ This library allows for control of Epson Projectors via TCP/IP.
   'abnormal 'av-standby 'unknown)].
 }
 
+@defidform[Projector-Aspect]{
+  Projector picture aspect mode. Equivalent to @racket[(U 'normal '4:3 '16:9
+  'auto 'full 'zoom 'native)].
+}
+
 @defclass[projector% object% ()]{
   Remotely controlled Epson projector instance.
 
@@ -66,12 +71,20 @@ This library allows for control of Epson Projectors via TCP/IP.
     Freezing the picture unmutes it.
   }
 
+  @defmethod[(set-aspect! (aspect Projector-Aspect)) Void]{
+    Change projector picture aspect mode.
+  }
+
   @defmethod[(get-mute?) Boolean]{
     Get video mute status.
   }
 
   @defmethod[(get-freeze?) Boolean]{
     Get picture freeze status.
+  }
+
+  @defmethod[(get-aspect) Projector-Aspect]{
+    Get current picture aspect mode.
   }
 
   @defmethod[(send-key (key Byte)) Void]{
