@@ -11,7 +11,9 @@
 
 (require esc/vp-net)
 
-(provide Projector%
+(provide Power-Status
+         Projector-Aspect
+         Projector%
          projector%)
 
 
