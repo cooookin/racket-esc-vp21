@@ -138,7 +138,8 @@
         ("ASPECT=30" 'auto)
         ("ASPECT=40" 'full)
         ("ASPECT=50" 'zoom)
-        ("ASPECT=60" 'native)))
+        ("ASPECT=60" 'native)
+        ("ERR"       'normal)))
 
     (define/public (set-mute! mute?)
       (void (command "MUTE ~a" (if mute? "ON" "OFF"))))
