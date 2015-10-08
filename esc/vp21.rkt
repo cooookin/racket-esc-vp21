@@ -17,6 +17,9 @@
          projector%)
 
 
+(define-logger esc-vp21)
+
+
 (define-type Power-Status
   (U 'offline
      'online
@@ -78,14 +81,17 @@
     (define/public (command fmt . args)
       (with-semaphore lock
         ;; Send our command.
-        (write-string (string-append (apply format fmt args) "\r\n") out)
-        (flush-output out)
+        (let ((cmd (apply format fmt args)))
+          (log-esc-vp21-info "-> ~a" cmd)
+          (write-string (string-append cmd "\r\n") out)
+          (flush-output out))
 
         ;; Read our reply.
         (let/ec return : String
           (loop
             (cond
               ((equal? #\: (peek-char in))
+               (log-esc-vp21-info "<- ack")
                (read-char in)
                (return ""))
 
@@ -96,9 +102,13 @@
 
                   (read-char in)
 
-                  (if (regexp-match? #rx"^IMEVENT=" line)
-                      (void)
-                      (return line)))))))))
+                  (cond
+                    ((regexp-match? #rx"^IMEVENT=" line)
+                     (log-esc-vp21-debug "<- ~a" line))
+
+                    (else
+                     (log-esc-vp21-info "<- ~a" line)
+                     (return line))))))))))
 
     (define/public (get-power-status)
       (match (command "PWR?")
