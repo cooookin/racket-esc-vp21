@@ -13,6 +13,7 @@
 
 (provide Power-Status
          Projector-Aspect
+         Projector-Format
          Projector%
          projector%)
 
@@ -39,6 +40,9 @@
      'zoom
      'native))
 
+(define-type Projector-Format
+  (U '4:3 '16:9 '16:10))
+
 
 (define-type Projector%
   (Class
@@ -53,6 +57,9 @@
 
     (set-aspect! (-> Projector-Aspect Void))
     (get-aspect (-> Projector-Aspect))
+
+    (set-format! (-> Projector-Format Void))
+    (get-format (-> Projector-Format))
 
     (set-mute! (-> Boolean Void))
     (set-freeze! (-> Boolean Void))
@@ -141,6 +148,16 @@
         ("ASPECT=60" 'native)
         ("ERR"       'normal)))
 
+    (define/public (set-format! format)
+      (void (command "SCFORMAT ~a") (format->code format)))
+
+    (define/public (get-format)
+      (match (command "SCFORMAT?")
+        ("SCFORMAT=01" '4:3)
+        ("SCFORMAT=02" '16:9)
+        ("SCFORMAT=03" '16:10)
+        ("ERR"         '4:3)))
+
     (define/public (set-mute! mute?)
       (void (command "MUTE ~a" (if mute? "ON" "OFF"))))
 
@@ -169,5 +186,12 @@
     ('full "40")
     ('zoom "50")
     ('native "60")))
+
+(: format->code (-> Projector-Format (U "01" "02" "03")))
+(define (format->code format)
+  (match format
+    ('4:3 "01")
+    ('16:9 "02")
+    ('16:10 "03")))
 
 ; vim:set ts=2 sw=2 et:
