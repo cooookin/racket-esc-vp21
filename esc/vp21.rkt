@@ -149,7 +149,7 @@
         ("ERR"       'normal)))
 
     (define/public (set-format! format)
-      (void (command "SCFORMAT ~a") (format->code format)))
+      (void (command "SCFORMAT ~a" (format->code format))))
 
     (define/public (get-format)
       (match (command "SCFORMAT?")
