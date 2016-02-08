@@ -146,7 +146,8 @@
         ("ASPECT=40" 'full)
         ("ASPECT=50" 'zoom)
         ("ASPECT=60" 'native)
-        ("ERR"       'normal)))
+        ("ERR"       'normal)
+        (else        'normal)))
 
     (define/public (set-format! format)
       (void (command "SCFORMAT ~a" (format->code format))))
